@@ -14,31 +14,9 @@ module.exports = (app) => {
   });
 
   app.get("/api/blogs", requireLogin, async (req, res) => {
-    const redis = require("redis");
-    const redisUrl = "redis://127.0.0.1:6379";
-    const client = redis.createClient(redisUrl);
+    const blogs = await Blog.find({ _user: req.user.id }).cache();
 
-    // work around for useless callbacks
-    const util = require("util");
-    client.get = util.promisify(client.get);
-    const userId = req.user.id;
-
-    // do we have any cached data related to this query
-    const cachedBlogs = await client.get(userId);
-
-    // if yes, then respond to the request right away and return
-    if (cachedBlogs) {
-      console.log("SERVING FROM CACHE");
-      return res.send(JSON.parse(cachedBlogs));
-    }
-
-    // if no, we need to respond to request and update our cache to store the data
-    const blogs = await Blog.find({ _user: userId });
-
-    console.log("SERVING FROM DB");
     res.send(blogs);
-
-    client.set(userId, JSON.stringify(blogs));
   });
 
   app.post("/api/blogs", requireLogin, async (req, res) => {

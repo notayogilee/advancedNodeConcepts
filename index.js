@@ -9,11 +9,10 @@ const keys = require("./config/keys");
 require("./models/User");
 require("./models/Blog");
 require("./services/passport");
-
-// console.log(process.env);
+require("./services/cache");
 
 mongoose.Promise = global.Promise;
-console.log("MONGO URI: ", keys.mongoURI);
+
 mongoose.connect(keys.mongoURI, {
   useNewUrlParser: true,
   useUnifiedTopology: true,
