@@ -29,6 +29,7 @@ mongoose.Query.prototype.exec = async function () {
 
   // If we do - return that
   if (cacheValue) {
+    console.log("USING CACHE");
     const doc = JSON.parse(cacheValue);
 
     return Array.isArray(doc)
@@ -39,9 +40,7 @@ mongoose.Query.prototype.exec = async function () {
   // If not - issue the query and store the result in redis
   const result = await exec.apply(this, arguments);
 
-  //   client.hset(this.hashKey, JSON.stringify(result), "EX", 10);
   client.hset(this.hashKey, key, JSON.stringify(result));
-  client.expire(this.hashKey, 10);
 
   return result;
 };
