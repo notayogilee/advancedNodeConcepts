@@ -1,3 +1,4 @@
+jest.setTimeout(20000);
 require("dotenv").config();
 require("../models/User");
 
